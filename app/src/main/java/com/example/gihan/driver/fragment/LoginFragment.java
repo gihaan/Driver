@@ -1,18 +1,25 @@
 package com.example.gihan.driver.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.gihan.driver.MainMap;
 import com.example.gihan.driver.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,32 +29,28 @@ import com.google.firebase.database.ValueEventListener;
 
 
 public class LoginFragment extends Fragment {
-    EditText phone;
-    ImageButton btnGo;
-
+    EditText userName;
+    EditText password;
+    Button login;
     FirebaseAuth mAuth;
-    DatabaseReference mDatabase;
-    String currentUser;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View v= inflater.inflate(R.layout.fragment_login, container, false);
+        View v = inflater.inflate(R.layout.fragment_login, container, false);
 
 
-        phone = (EditText) v.findViewById(R.id.et_login_phone);
-        btnGo = (ImageButton) v.findViewById(R.id.btn_login_go);
-
+        userName = (EditText) v.findViewById(R.id.etlogin_username);
+        password = (EditText) v.findViewById(R.id.et_login_password);
+        login = v.findViewById(R.id.btn_login);
         mAuth = FirebaseAuth.getInstance();
-        currentUser=mAuth.getCurrentUser().getUid();
-        mDatabase= FirebaseDatabase.getInstance().getReference().child("drivers").child(currentUser);
 
-        btnGo.setOnClickListener(new View.OnClickListener() {
+        login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loginn();
 
-                Login();
             }
 
         });
@@ -57,33 +60,42 @@ public class LoginFragment extends Fragment {
     }
 
 
-    public void Login() {
-        if ( !TextUtils.isEmpty(phone.getText().toString())) {
-            mDatabase.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    String phoneNumber=dataSnapshot.child("phone").getValue().toString();
-                    String g=phone.getText().toString();
-                    if (phoneNumber.matches(g)){
-                        Toast.makeText(getActivity(),"تم تسجيل الدخول بنجاح ",Toast.LENGTH_SHORT).show();
-                    }else {
-                        Toast.makeText(getActivity(),"من فضلك قم بكتابه الرقم بطريقه صحيحه ",Toast.LENGTH_SHORT).show();
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Toast.makeText(getActivity(),databaseError.getMessage(),Toast.LENGTH_SHORT).show();
+    public void loginn() {
 
 
-                }
-            });
+        //Check Validation
+        if (TextUtils.isEmpty(userName.getText().toString())) {
+            Toast.makeText(getContext(), "user name not found ", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        if (TextUtils.isEmpty(password.getText().toString())) {
+            Toast.makeText(getContext(), "password not found ", Toast.LENGTH_SHORT).show();
 
+            return;
         }
 
 
+        //SIGN IN
+        mAuth.signInWithEmailAndPassword(userName.getText().toString(), password.getText().toString())
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                    @Override
+                    public void onSuccess(AuthResult authResult) {
+                        Toast.makeText(getContext(), "sucessful ", Toast.LENGTH_SHORT).show();
+
+                        startActivity(new Intent(getContext(), MainMap.class));
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+
+
+            }
+        });
+
+
     }
+
 }

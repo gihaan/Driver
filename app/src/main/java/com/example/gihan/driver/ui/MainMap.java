@@ -1,8 +1,9 @@
-package com.example.gihan.driver;
+package com.example.gihan.driver.ui;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.example.gihan.driver.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;

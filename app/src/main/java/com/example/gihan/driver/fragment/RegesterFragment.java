@@ -1,7 +1,6 @@
 package com.example.gihan.driver.fragment;
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -13,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.gihan.driver.ui.MainMap;
 import com.example.gihan.driver.R;
 import com.example.gihan.driver.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -56,6 +56,9 @@ public class RegesterFragment extends Fragment {
                 if (checkValidation()) {
                     createAccount();
                     Toast.makeText(getActivity(), "تم التسجيل بنجاح  ", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getContext(), MainMap.class));
+
+
 
                 } else
                     Toast.makeText(getActivity(), "من فضلك اكمل البيانات بصوره صحيحه ", Toast.LENGTH_SHORT).show();
